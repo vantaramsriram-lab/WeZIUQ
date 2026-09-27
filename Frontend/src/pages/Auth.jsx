@@ -33,7 +33,7 @@ const Auth = () => {
       )
       navigate(res.data.user.role == 'admin' ? '/admin' : '/user')
     } catch (error) {
-      setLoginError(error.response.data.message)
+      setLoginError(error.response?.data?.message || error.message)
     } finally {
       setLoginLoading(false)
     }
@@ -65,7 +65,7 @@ const Auth = () => {
         });
       }, 1500);
     } catch (error) {
-      setRegisterError(error.response.data.message)
+      setRegisterError(error.response?.data?.message || error.message)
       
     } finally {
       setRegisterLoading(false)

@@ -8,7 +8,7 @@ import quizRouter from "./routes/quiz.routes.js"
 import adminRouter from "./routes/admin.routes.js"
 const app = express();
 app.use(cors({
-  origin: "https://we-ziuq.vercel.app/",
+  origin: "https://we-ziuq.vercel.app",
   credentials: true
 }))
 configDotenv()
