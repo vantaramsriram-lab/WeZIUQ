@@ -7,7 +7,10 @@ import questionRouter from "./routes/questions.routes.js"
 import quizRouter from "./routes/quiz.routes.js"
 import adminRouter from "./routes/admin.routes.js"
 const app = express();
-app.use(cors())
+app.use(cors({
+  origin: "https://we-ziuq.vercel.app/",
+  credentials: true
+}))
 configDotenv()
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
@@ -20,7 +23,7 @@ app.use("/api/admin", adminRouter)
 app.get("/api/health", (req, res) => {
   res.send("Health Check ! Server is Running")
 })
-const port = process.env.PORT || 5000
+const port = process.env.PORT || 5001
 app.listen(port, () => {
   console.log(`Server started at http://localhost:${port}`)
 })
