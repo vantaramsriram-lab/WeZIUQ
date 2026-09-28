@@ -139,7 +139,7 @@ const Quiz = () => {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <div
-          className="absolute -top-24 -left-24 h-72 w-72 rounded-full blur-3xl"
+          className="absolute -top-24 -left-24 h-72 w-72 rounded-full blur-3xl pointer-events-none"
           style={{
             backgroundColor:
               "color-mix(in srgb, var(--primary) 15%, transparent)",
@@ -147,7 +147,7 @@ const Quiz = () => {
         />
 
         <div
-          className="absolute top-[15%] -right-20 h-64 w-64 rounded-full blur-3xl"
+          className="absolute top-[15%] -right-20 h-64 w-64 rounded-full blur-3x pointer-events-nonel"
           style={{
             backgroundColor:
               "color-mix(in srgb, var(--primary) 12%, transparent)",
@@ -155,7 +155,7 @@ const Quiz = () => {
         />
 
         <div
-          className="absolute top-[45%] left-[5%] h-40 w-40 rounded-full blur-3xl"
+          className="absolute top-[45%] left-[5%] h-40 w-40 rounded-full blur-3xl pointer-events-none"
           style={{
             backgroundColor:
               "color-mix(in srgb, var(--primary) 10%, transparent)",
@@ -163,7 +163,7 @@ const Quiz = () => {
         />
 
         <div
-          className="absolute bottom-[-100px] left-[20%] h-80 w-80 rounded-full blur-3xl"
+          className="absolute bottom-[-100px] left-[20%] h-80 w-80 rounded-full blur-3xl pointer-events-none"
           style={{
             backgroundColor:
               "color-mix(in srgb, var(--primary) 10%, transparent)",
@@ -171,7 +171,7 @@ const Quiz = () => {
         />
 
         <div
-          className="absolute bottom-[15%] right-[10%] h-48 w-48 rounded-full blur-3xl"
+          className="absolute bottom-[15%] right-[10%] h-48 w-48 rounded-full blur-3xl pointer-events-none"
           style={{
             backgroundColor:
               "color-mix(in srgb, var(--primary) 12%, transparent)",
@@ -179,7 +179,7 @@ const Quiz = () => {
         />
 
         <div
-          className="absolute top-[30%] right-[25%] h-24 w-24 rounded-full blur-2xl"
+          className="absolute top-[30%] right-[25%] h-24 w-24 rounded-full blur-2xl pointer-events-none"
           style={{
             backgroundColor:
               "color-mix(in srgb, var(--primary) 10%, transparent)",
@@ -187,7 +187,7 @@ const Quiz = () => {
         />
 
         <div
-          className="absolute bottom-[30%] left-[30%] h-28 w-28 rounded-full blur-3xl"
+          className="absolute bottom-[30%] left-[30%] h-28 w-28 rounded-full blur-3xl pointer-events-none"
           style={{
             backgroundColor:
               "color-mix(in srgb, var(--primary) 8%, transparent)",
