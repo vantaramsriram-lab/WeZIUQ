@@ -54,7 +54,7 @@ const UserLayout = () => {
         {/* Logo */}
         <div className="flex gap-4">
           <button className="sm:hidden" onClick={() => { setSideBarOpen(!sideBarOpen) }}><VscThreeBars className="size-7" /></button>
-          <h1 className="text-[38px] font-bold tracking-wider">
+          <h1 className="sm:text-[38px] text-[30px] font-bold tracking-wider">
             <span style={{ color: "var(--text-primary)" }}>
               We
             </span>
