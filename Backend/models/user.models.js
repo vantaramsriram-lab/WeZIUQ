@@ -19,7 +19,6 @@ const userSchema = new mongoose.Schema({
     minlength: 6,
   },
   role: { type: String, enum: ["user", "admin"], default: "user" },
-  quizCompleted: { type: Boolean, default: false }
 }, { timestamps: true })
 userSchema.methods.toJSON = function () {
   const obj = this.toObject();

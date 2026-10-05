@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/authContext.jsx";
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import api from "../../services/api.js"
 
 const Quiz = () => {
+  const {quizId} = useParams()
   const [loading, setLoading] = useState(true)
   const [submitLoading, setSubmitLoading] = useState(false)
   const [questions, setQuestions] = useState([])
@@ -21,7 +22,7 @@ const Quiz = () => {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const res = await api.get("/quiz/start");
+        const res = await api.post(`/attempt/start/${quizId}`);
         const { questions: qs, attempt, duration } = res.data
         setQuestions(qs)
         console.log("Attempt: ", attempt)
@@ -75,7 +76,7 @@ const Quiz = () => {
 
   const handleAnswer = async (questionId, selectedAnswer) => {
     try {
-      const res = await api.put(`/quiz/attempt/${attemptId}/answer`, { questionId, selectedAnswer });
+      const res = await api.put(`/attempt/${attemptId}/answer`, { questionId, selectedAnswer });
       setAnswers((prev) => ({
         ...prev,
         [questionId]: selectedAnswer,
@@ -108,7 +109,7 @@ const Quiz = () => {
   const handleSubmit = async () => {
     try {
       setSubmitLoading(true)
-      const res = await api.post("/quiz/submit");
+      const res = await api.post(`/attempt/${attemptId}/submit`);
       localStorage.removeItem("currentQuestion");
       navigate("/quiz/completed");
     } catch (error) {

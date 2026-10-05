@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api.js";
-
+import { useOutletContext } from "react-router-dom";
 const emptyForm = {
   question: "",
   options: ["", "", "", ""],
@@ -8,6 +8,8 @@ const emptyForm = {
 };
 
 const AdminQuestions = () => {
+  const quizId = useOutletContext()
+
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -28,7 +30,8 @@ const AdminQuestions = () => {
   // Fetch all questions
   const fetchQuestions = async () => {
     try {
-      const res = await api.get("/questions");
+      const res = await api.get(`/admin/${quizId}/questions`);
+      console.log(res.data)
       setQuestions(res.data);
     } catch (error) {
       console.error("Failed to fetch questions:", error);
@@ -43,7 +46,7 @@ const AdminQuestions = () => {
   // Delete question
   const handleDelete = async (questionId) => {
     try {
-      await api.delete(`/questions/${questionId}`);
+      await api.delete(`/questions/${quizId}/${questionId}`);
 
       setQuestions((prev) =>
         prev.filter((question) => question._id !== questionId)
@@ -152,10 +155,10 @@ const AdminQuestions = () => {
       setSaving(true);
 
       if (editingId) {
-        await api.put(`/questions/${editingId}`, form);
+        await api.put(`/questions/${quizId}/${editingId}`, form);
         showSuccess("Question updated successfully");
       } else {
-        await api.post("/questions", form);
+        await api.post(`/questions/${quizId}`, form);
         showSuccess("Question added successfully");
       }
 

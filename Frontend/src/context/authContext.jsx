@@ -35,6 +35,12 @@ export const AuthProvider = ({ children }) => {
     });
     return res;
   }
+  const clubRegister = async ({ clubName, clubCode, adminName, adminEmail, adminPassword }) => {
+    const res = await api.post("/auth/registerClub", {
+      clubName, clubCode, adminName, adminEmail, adminPassword
+    })
+    return res;
+  }
   const login = async (email, password) => {
     const res = await api.post("/auth/login", { email, password })
     const { token, user } = res.data;
@@ -49,7 +55,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
   const value = {
-    register, login, user, logout
+    register, login, user, logout, clubRegister
   }
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

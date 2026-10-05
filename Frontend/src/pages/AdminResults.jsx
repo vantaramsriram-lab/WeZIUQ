@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import api from "../../services/api.js";
-
+import { useOutletContext } from "react-router-dom";
 const AdminResults = () => {
+  const quizId = useOutletContext()
   const [results, setResults] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
@@ -22,7 +23,7 @@ const AdminResults = () => {
       setLoading(true);
       setError("");
 
-      const res = await api.get("/admin/results", {
+      const res = await api.get(`admin/${quizId}/results`, {
         params: { search },
       });
 

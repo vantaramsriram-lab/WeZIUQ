@@ -3,22 +3,30 @@ import { useAuth } from "../context/authContext";
 import { useNavigate } from "react-router-dom"
 
 const Auth = () => {
-  const { register, login } = useAuth()
+  const { register, login, clubRegister } = useAuth()
   const [activeTab, setActiveTab] = useState("login");
   const [success, setSuccess] = useState("");
   const [loginError, setLoginError] = useState("")
   const [registerError, setRegisterError] = useState("")
+  const [clubRegisterError, setClubRegisterError] = useState("");
   const [loginLoading, setLoginLoading] = useState(false)
   const [registerLoading, setRegisterLoading] = useState(false)
+  const [clubRegisterLoading, setClubRegisterLoading] = useState(false);
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
   });
-
   const [registerData, setRegisterData] = useState({
     name: "",
     email: "",
     password: "",
+  });
+  const [clubData, setClubData] = useState({
+    clubName: "",
+    clubCode: "",
+    adminName: "",
+    adminEmail: "",
+    adminPassword: "",
   });
   const navigate = useNavigate()
   const handleLogin = async (e) => {
@@ -66,11 +74,37 @@ const Auth = () => {
       }, 1500);
     } catch (error) {
       setRegisterError(error.response?.data?.message || error.message)
-      
+
     } finally {
       setRegisterLoading(false)
     }
   };
+  const handleClubRegister = async (e) => {
+    e.preventDefault();
+
+    setClubRegisterError("")
+    try {
+      setClubRegisterLoading(true);
+      const response = await clubRegister(clubData);
+      setSuccess("Club Registered successfully!");
+      setClubData({
+        ...clubData,
+        clubName: "",
+        clubCode: "",
+        adminName: "",
+        adminEmail: "",
+        adminPassword: "",
+      })
+      setTimeout(() => {
+        setActiveTab("login");
+        setSuccess("");
+      }, 1500);
+    } catch (error) {
+      setClubRegisterError(error.response?.data?.message || error.message)
+    } finally {
+      setClubRegisterLoading(false)
+    }
+  }
 
 
   const switchTab = (tab) => {
@@ -348,7 +382,7 @@ const Auth = () => {
                     active:scale-[0.99]
                   "
                 >
-                  {loginLoading ? "Logging in...": "Login"}
+                  {loginLoading ? "Logging in..." : "Login"}
                 </button>
 
               </form>
@@ -491,15 +525,243 @@ const Auth = () => {
                     hover:bg-[var(--primary-dark)]
                   "
                 >
-                  {registerLoading ? "Registering" : "Register"}
+                  {registerLoading ? "Registering..." : "Register"}
                 </button>
+                <p className="text-sm text-center">
+                  want to register your club? <a href="#" className="text-[var(--primary)] hover:underline" onClick={() => {
+                    setActiveTab("clubRegister")
+                  }}>register club</a>
+                </p>
               </form>
 
             </>
           )}
+
+          {activeTab === "clubRegister" && (
+            <>
+              <div className="mb-7">
+                <h2 className="text-[22px] font-semibold text-[var(--text-primary)]">
+                  Register your club
+                </h2>
+
+                <p className="mt-1 text-[14px] text-[var(--text-secondary)]">
+                  Create a club and register its administrator
+                </p>
+              </div>
+
+              <form onSubmit={handleClubRegister} className="space-y-4">
+
+                {/* Club Name */}
+
+                <input
+                  type="text"
+                  placeholder="Club name"
+                  value={clubData.clubName}
+                  onChange={(e) =>
+                    setClubData({
+                      ...clubData,
+                      clubName: e.target.value,
+                    })
+                  }
+                  className="
+          w-full
+          rounded-xl
+          border
+          border-[var(--border)]
+          bg-white
+          px-4
+          py-3
+          text-[15px]
+          outline-none
+          transition
+
+          placeholder:text-gray-400
+
+          focus:border-[var(--primary)]
+          focus:ring-4
+          focus:ring-blue-100
+        "
+                  required
+                />
+
+                {/* Club Code */}
+
+                <input
+                  type="text"
+                  placeholder="Club code"
+                  value={clubData.clubCode}
+                  onChange={(e) =>
+                    setClubData({
+                      ...clubData,
+                      clubCode: e.target.value,
+                    })
+                  }
+                  className="
+          w-full
+          rounded-xl
+          border
+          border-[var(--border)]
+          bg-white
+          px-4
+          py-3
+          text-[15px]
+          outline-none
+          transition
+
+          placeholder:text-gray-400
+
+          focus:border-[var(--primary)]
+          focus:ring-4
+          focus:ring-blue-100
+        "
+                  required
+                />
+
+                {/* Admin Name */}
+
+                <input
+                  type="text"
+                  placeholder="Admin name"
+                  value={clubData.adminName}
+                  onChange={(e) =>
+                    setClubData({
+                      ...clubData,
+                      adminName: e.target.value,
+                    })
+                  }
+                  className="
+          w-full
+          rounded-xl
+          border
+          border-[var(--border)]
+          bg-white
+          px-4
+          py-3
+          text-[15px]
+          outline-none
+          transition
+
+          placeholder:text-gray-400
+
+          focus:border-[var(--primary)]
+          focus:ring-4
+          focus:ring-blue-100
+        "
+                  required
+                />
+
+                {/* Admin Email */}
+
+                <input
+                  type="email"
+                  placeholder="Admin email address"
+                  value={clubData.adminEmail}
+                  onChange={(e) =>
+                    setClubData({
+                      ...clubData,
+                      adminEmail: e.target.value,
+                    })
+                  }
+                  className="
+          w-full
+          rounded-xl
+          border
+          border-[var(--border)]
+          bg-white
+          px-4
+          py-3
+          text-[15px]
+          outline-none
+          transition
+
+          placeholder:text-gray-400
+
+          focus:border-[var(--primary)]
+          focus:ring-4
+          focus:ring-blue-100
+        "
+                  required
+                />
+
+                {/* Admin Password */}
+
+                <input
+                  type="password"
+                  placeholder="Create admin password"
+                  value={clubData.adminPassword}
+                  onChange={(e) =>
+                    setClubData({
+                      ...clubData,
+                      adminPassword: e.target.value,
+                    })
+                  }
+                  className="
+          w-full
+          rounded-xl
+          border
+          border-[var(--border)]
+          bg-white
+          px-4
+          py-3
+          text-[15px]
+          outline-none
+          transition
+
+          placeholder:text-gray-400
+
+          focus:border-[var(--primary)]
+          focus:ring-4
+          focus:ring-blue-100
+        "
+                  required
+                />
+
+                {clubRegisterError !== "" &&
+                  clubRegisterError !== "Server Error" && (
+                    <p className="text-red-700">
+                      {clubRegisterError}
+                    </p>
+                  )}
+
+                {/* Register Club */}
+
+                <button
+                  type="submit"
+                  disabled={clubRegisterLoading}
+                  className="
+          w-full
+          rounded-xl
+          bg-[var(--primary)]
+          py-3
+          text-[15px]
+          font-semibold
+          text-white
+          transition
+          hover:bg-[var(--primary-dark)]
+        "
+                >
+                  {clubRegisterLoading ? "Registering..." : "Register Club"}
+                </button>
+
+                <p className="text-sm text-center">
+                  Already have an account?{" "}
+                  <a
+                    href="#"
+                    className="text-[var(--primary)] hover:underline"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setActiveTab("register");
+                    }}
+                  >
+                    Register as user
+                  </a>
+                </p>
+              </form>
+            </>
+          )}
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 

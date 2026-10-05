@@ -4,6 +4,13 @@ const quizAttemptSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+  quizId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Quiz",
+  },
+  duration: {
+    type: Number,
+  },
   answers: [{
     questionId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -23,6 +30,7 @@ const quizAttemptSchema = new mongoose.Schema({
   startedAt: {
     type: Date,
     required: true,
+    default: new Date()
   },
   submittedAt: {
     type: Date,
@@ -37,4 +45,14 @@ const quizAttemptSchema = new mongoose.Schema({
     default: 'in-progress',
   },
 }, { timestamps: true })
+// One user can have only one attempt for a quiz
+quizAttemptSchema.index(
+  { userId: 1, quizId: 1 },
+  { unique: true }
+);
+// Useful for admin dashboard / quiz statistics
+quizAttemptSchema.index({
+  quizId: 1,
+  status: 1
+})
 export const QuizAttempt = mongoose.model("QuizAttempt", quizAttemptSchema)
