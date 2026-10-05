@@ -3,8 +3,9 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
 import api from "../../services/api";
 import { useAuth } from "../context/authContext";
-
+import { VscThreeBars } from "react-icons/vsc";
 const ClubAdminLayout = () => {
+  const [sideBarOpen, setSideBarOpen] = useState(false)
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -270,7 +271,8 @@ const ClubAdminLayout = () => {
         <div className="flex h-full items-center justify-between px-7">
 
           {/* Logo */}
-          <h1 className="text-[38px] font-bold tracking-wider">
+          <h1 className="sm:text-[38px] text-[32px] font-bold tracking-wider">
+            <button className="sm:hidden" onClick={() => { setSideBarOpen(!sideBarOpen) }}><VscThreeBars className="size-7" /></button>
             <span style={{ color: "var(--text-primary)" }}>
               We
             </span>
@@ -331,18 +333,16 @@ const ClubAdminLayout = () => {
 
       {/* Sidebar */}
       <aside
-        className="
-          fixed
-          bottom-0
-          left-0
-          top-[76px]
-          w-[240px]
-          border-r
-          border-[var(--border)]
-          bg-white
-          px-6
-          py-8
-        "
+        className={`
+           bg-white border-r border-[var(--border)] px-6 py-7 
+           /* Mobile */
+    fixed top-18 left-0 z-40 h-[calc(100vh-64px)] w-64
+    transition-transform duration-300
+    ${sideBarOpen ? "translate-x-0" : "-translate-x-full"}
+
+    /* sm and above */
+    sm:static sm:translate-x-0 sm:h-auto sm:w-auto sm:z-auto
+          `}
       >
 
         {/* Sidebar heading */}
@@ -440,11 +440,10 @@ const ClubAdminLayout = () => {
                   px-2
                   py-2.5
                   transition
-                  ${
-                    isActive
-                      ? "bg-[var(--primary)]"
-                      : "hover:bg-[#f5f3ff]"
-                  }
+                  ${isActive
+                  ? "bg-[var(--primary)]"
+                  : "hover:bg-[#f5f3ff]"
+                }
                 `
               }
             >
@@ -463,10 +462,9 @@ const ClubAdminLayout = () => {
                       text-sm
                       font-semibold
                       transition
-                      ${
-                        isActive
-                          ? "bg-white text-[var(--primary)]"
-                          : "bg-[#f1edff] text-[var(--primary)] group-hover:bg-[var(--primary)] group-hover:text-white"
+                      ${isActive
+                        ? "bg-white text-[var(--primary)]"
+                        : "bg-[#f1edff] text-[var(--primary)] group-hover:bg-[var(--primary)] group-hover:text-white"
                       }
                     `}
                   >
@@ -481,10 +479,9 @@ const ClubAdminLayout = () => {
                         truncate
                         text-[14px]
                         font-medium
-                        ${
-                          isActive
-                            ? "text-white"
-                            : "text-[#334155]"
+                        ${isActive
+                          ? "text-white"
+                          : "text-[#334155]"
                         }
                       `}
                     >
@@ -495,10 +492,9 @@ const ClubAdminLayout = () => {
                       className={`
                         mt-0.5
                         text-[11px]
-                        ${
-                          isActive
-                            ? "text-white/70"
-                            : "text-[#94a3b8]"
+                        ${isActive
+                          ? "text-white/70"
+                          : "text-[#94a3b8]"
                         }
                       `}
                     >

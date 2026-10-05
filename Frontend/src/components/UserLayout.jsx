@@ -194,7 +194,7 @@ const UserLayout = () => {
           
            bg-white border-r border-[var(--border)] px-6 py-7 
            /* Mobile */
-    fixed top-16 left-0 z-40 h-[calc(100vh-64px)] w-64
+    fixed top-18 left-0 z-40 h-[calc(100vh-64px)] w-64
     transition-transform duration-300
     ${sideBarOpen ? "translate-x-0" : "-translate-x-full"}
 
