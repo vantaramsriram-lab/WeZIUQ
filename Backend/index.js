@@ -9,8 +9,8 @@ import adminRouter from "./routes/admin.routes.js"
 import userRouter from "./routes/user.routes.js"
 const app = express();
 app.use(cors({
-  // origin: "https://we-ziuq.vercel.app",
-  // credentials: true
+  origin: "https://we-ziuq.vercel.app",
+  credentials: true
 }))
 configDotenv()
 app.use(express.json())
