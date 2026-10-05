@@ -27,7 +27,7 @@ const QuizAdminLayout = () => {
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--text-primary)]">
 
-      <main className="mx-auto sm:px-6 px-2 py-8 md:px-30">
+      <main className="mx-auto sm:px-6 px-1 py-8 md:px-30">
 
         {/* Navigation Links */}
         <div className="flex w-full gap-5 overflow-x-auto sm:gap-10 mb-10">
