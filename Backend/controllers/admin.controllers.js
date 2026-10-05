@@ -1,17 +1,63 @@
 import { User } from "../models/user.models.js"
+import { Membership } from "../models/membership.models.js"
 import { Question } from "../models/question.models.js"
 import { QuizAttempt } from "../models/quizAttempt.models.js"
+import mongoose from "mongoose"
+import { Quiz } from "../models/quiz.models.js"
+//Done
+const getQuizzes = async (req, res) => {
+  try {
+    const clubId = req.club._id;
+    const quizzes = await Quiz.find({ clubId });
+    return res.status(200).json(quizzes);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error in getting quizzes', error: error.message });
+  }
+}
+const createQuiz = async (req, res) => {
+  try {
+    const clubId = req.club._id;
+    const userId = req.user._id;
+    const { title, description, duration } = req.body;
+    if (!title || !description || !duration) {
+      return res.status(400).json({
+        message: "All are required fields"
+      })
+    }
+    const quiz = await Quiz.create({
+      clubId: clubId, title, description, duration: Number(duration), createdBy: new mongoose.Types.ObjectId(userId)
+    })
+    return res.status(201).json(quiz);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error in creating quiz', error: error.message });
+  }
+}
+const getMembers = async (req, res) => {
+  try {
+    const clubId  = req.club._id;
+    const members = await Membership.find({ clubId }).populate({
+      path: "userId",
+      select: "-password"
+    });
+    const membersCount = members.length;
+    return res.status(200).json({
+      members: members,
+      membersCount: membersCount
+    })
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+}
 const getStatistics = async (req, res) => {
   try {
-    const totalUsers = await User.countDocuments({ role: 'user' });
-    const totalSubmissions = await QuizAttempt.countDocuments({ status: 'submitted' });
-    const totalQuestions = await Question.countDocuments();
-    const completedCount = await User.countDocuments({ role: 'user', quizCompleted: true });
+    const {quizId} = req.params;
+    const totalAttempts = await QuizAttempt.countDocuments({ quizId });
+    const totalSubmissions = await QuizAttempt.countDocuments({ quizId, status: 'submitted' });
+    const totalQuestions = await Question.countDocuments({ quizId });
     res.json({
-      totalUsers,
+      totalAttempts,
       totalSubmissions,
       totalQuestions,
-      completedCount,
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -20,17 +66,55 @@ const getStatistics = async (req, res) => {
 const getUsers = async (req, res) => {
   try {
     const { search } = req.query;
-    let query = {};
+    const { quizId } = req.params;
+    const matchStage = { quizId: new mongoose.Types.ObjectId(quizId) };
+    const pipeline = [
+      { $match: matchStage },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user"
+        }
+      },
+      {
+        $unwind: "$user"
+      },
+    ]
     if (search) {
-      query = {
-        $or: [
-          { name: { $regex: search, $options: 'i' } },
-          { email: { $regex: search, $options: 'i' } }
-        ]
-      }
+      pipeline.push({
+        $match: {
+          $or: [
+            {
+              "user.name": {
+                $regex: search,
+                $options: "i"
+              }
+            },
+            {
+              "user.email": {
+                $regex: search,
+                $options: "i"
+              }
+            }
+          ]
+        }
+      })
     }
-    const users = await User.find(query).select("-password").sort({ createdAt: -1 });
-    res.status(200).json(users)
+    pipeline.push(
+      {
+        $project: {
+          userId: "$user._id",
+          userName: "$user.name",
+          userEmail: "$user.email",
+          userCreatedAt: "$user.createdAt",
+          status: 1,
+        }
+      }
+    )
+    const results = await QuizAttempt.aggregate(pipeline)
+    res.status(200).json(results)
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
@@ -38,8 +122,9 @@ const getUsers = async (req, res) => {
 const getResults = async (req, res) => {
   try {
     const { search } = req.query;
-    const matchStage = { status: "submitted" };
-    const results = await QuizAttempt.aggregate([
+    const { quizId } = req.params;
+    const matchStage = { status: "submitted", quizId: new mongoose.Types.ObjectId(quizId) };
+    const pipeline = [
       { $match: matchStage },
       {
         $lookup: {
@@ -52,31 +137,46 @@ const getResults = async (req, res) => {
       {
         $unwind: '$user'
       },
-      {
-        $project: {
-          userName: '$user.name',
-          userEmail: '$user.email',
-          score: 1,
-          totalQuestions: 1,
-          startedAt: 1,
-          submittedAt: 1,
-          timeTaken: 1,
-        }
-      },
-      {
-        $sort: { submittedAt: -1 }
-      }
-    ])
-    let filtered = results;
+    ]
     if (search) {
-      const s = search.toLowerCase()
-      filtered = results.filter(
-        r => r.userName.toLowerCase().includes(s) || r.userEmail.toLowerCase().includes(s)
+      pipeline.push({
+        $match: {
+          $or: [
+            {
+              "user.name": {
+                $regex: search,
+                $options: "i"
+              }
+            },
+            {
+              "user.email": {
+                $regex: search,
+                $options: "i"
+              }
+            }
+          ]
+        }
+      }
       )
     }
-    res.json(filtered)
+    pipeline.push({
+      $project: {
+        userName: '$user.name',
+        userEmail: '$user.email',
+        score: 1,
+        totalQuestions: 1,
+        startedAt: 1,
+        submittedAt: 1,
+        timeTaken: 1,
+      }
+    },
+      {
+        $sort: { submittedAt: -1 }
+      })
+    const results = await QuizAttempt.aggregate(pipeline)
+    res.status(200).json(results)
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 }
-export { getStatistics, getUsers, getResults }
+export { getStatistics, getUsers, getResults, getMembers, createQuiz, getQuizzes }

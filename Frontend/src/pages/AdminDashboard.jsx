@@ -4,17 +4,16 @@ import { LuUsersRound } from "react-icons/lu";
 import { MdOutlineQuestionMark } from "react-icons/md";
 import { FaPaperPlane } from "react-icons/fa";
 import { FaCheckCircle } from "react-icons/fa";
-
+import { useOutletContext } from "react-router-dom";
 const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+  const quizId  = useOutletContext()
   useEffect(() => {
     const fetchStatistics = async () => {
       try {
-        const res = await api.get("/admin/statistics");
+        const res = await api.get(`/admin/${quizId}/statistics`);
         setStats(res.data)
-        // console.log(res.data)
       } catch (error) {
         console.log("Failed to fetch Statistics", error.response.message)
       } finally {
@@ -22,7 +21,7 @@ const AdminDashboard = () => {
       }
     }
     fetchStatistics();
-  }, [])
+  }, [quizId])
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -33,7 +32,7 @@ const AdminDashboard = () => {
   const statCards = [
     {
       label: 'Total Users',
-      value: stats?.totalUsers || 0,
+      value: stats?.totalAttempts || 0,
       icon: <LuUsersRound size={32} />,
       color: 'from-blue-500/20 to-blue-600/20',
       border: 'border-blue-500/30',
@@ -51,13 +50,6 @@ const AdminDashboard = () => {
       icon: <MdOutlineQuestionMark size={32} />,
       color: 'from-purple-500/20 to-purple-600/20',
       border: 'border-purple-500/30',
-    },
-    {
-      label: 'Completed',
-      value: stats?.completedCount || 0,
-      icon: <FaCheckCircle />,
-      color: 'from-[#00aeef]/20 to-[#21b9ef]/20',
-      border: 'border-[#00aeef]/30',
     },
   ];
   return (

@@ -3,18 +3,18 @@ import api from '../../services/api.js';
 import { LuUsersRound } from "react-icons/lu";
 import { useEffect } from 'react';
 import { useState } from 'react'
-
+import { useOutletContext } from 'react-router-dom';
 const AdminUsers = () => {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("")
+  const quizId = useOutletContext()
   useEffect(() => {
     fetchUsers();
   }, [search])
   const fetchUsers = async () => {
     try {
-      const res = await api.get("/admin/users", { params: {search} })
-      console.log(res.data)
+      const res = await api.get(`/admin/${quizId}/users`, { params: { search } })
       setUsers(res.data)
     } catch (error) {
       console.log("Unable to fetch Users")
@@ -63,18 +63,18 @@ const AdminUsers = () => {
               </thead>
               <tbody>
                 {filteredUsers.map((user) => (
-                  <tr key={user._id} className="border-b border-black hover:bg-gray-100 transition-colors">
-                    <td className="px-6 py-4 text-gray-900 font-medium">{user.name}</td>
-                    <td className="px-6 py-4 text-gray-900">{user.email}</td>
+                  <tr key={user.userId} className="border-b border-black hover:bg-gray-100 transition-colors">
+                    <td className="px-6 py-4 text-gray-900 font-medium">{user.userName}</td>
+                    <td className="px-6 py-4 text-gray-900">{user.userEmail}</td>
                     <td className="px-6 py-4 text-gray-900 text-sm">
-                      {new Date(user.createdAt).toLocaleDateString()}
+                      {new Date(user.userCreatedAt).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex px-3 py-1 rounded-xl text-xs font-medium ${user.quizCompleted
+                      <span className={`inline-flex px-3 py-1 rounded-xl text-xs font-medium ${user.status === 'submitted'
                         ? 'bg-green-500/10 text-green-400 border border-green-500/30'
                         : 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/30'
                         }`}>
-                        {user.quizCompleted ? 'Completed' : 'Pending'}
+                        {user.status}
                       </span>
                     </td>
                   </tr>

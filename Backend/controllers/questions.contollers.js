@@ -1,7 +1,8 @@
 import { Question } from "../models/question.models.js";
 const getQuestions = async (req, res) => {
   try {
-    const questions = await Question.find({});
+    const { quizId } = req.params;
+    const questions = await Question.find({ quizId });
     if (questions.length === 0) {
       return res.status(404).json({
         message: "Questions Not Found. Add Questions"
@@ -18,6 +19,8 @@ const getQuestions = async (req, res) => {
 const addQuestion = async (req, res) => {
   try {
     const { question, options, correctAnswer } = req.body;
+    const { quizId } = req.params
+
     if (!question || !options || !correctAnswer) {
       return res.status(400).json({ message: "All fields are required!" });
     }
@@ -33,6 +36,7 @@ const addQuestion = async (req, res) => {
     }
     const newQuestion = await Question.create(
       {
+        quizId,
         question,
         options,
         correctAnswer
@@ -41,7 +45,6 @@ const addQuestion = async (req, res) => {
     res.status(201).json({
       message: "Question created Successfully",
       newQuestion,
-      correctAnswer: newQuestion.correctAnswer
     })
   } catch (err) {
     res.status(500).json({
@@ -51,10 +54,10 @@ const addQuestion = async (req, res) => {
 }
 
 
-
 const updateQuestion = async (req, res) => {
   try {
     const { question, options, correctAnswer } = req.body;
+    const { quizId } = req.params
     if (!question || !options || !correctAnswer) {
       return res.status(400).json({ message: 'All fields are required' });
     }
@@ -66,7 +69,8 @@ const updateQuestion = async (req, res) => {
     if (!options.includes(correctAnswer)) {
       return res.status(400).json({ message: 'Correct answer must be one of the options' });
     }
-    let updatedQuestion = await Question.findByIdAndUpdate(req.params.id, {
+    const questionId = req.params.questionId
+    let updatedQuestion = await Question.findOneAndUpdate({ quizId, _id: questionId }, {
       question, options, correctAnswer
     }, { new: true, runValidators: true });
     if (!updatedQuestion) {
@@ -88,7 +92,8 @@ const updateQuestion = async (req, res) => {
 
 const deleteQuestion = async (req, res) => {
   try {
-    const deletedQuestion = await Question.findByIdAndDelete(req.params.id);
+    const { quizId, questionId } = req.params
+    const deletedQuestion = await Question.findOneAndDelete({ quizId, _id: questionId });
     if (!deletedQuestion) {
       return res.status(404).json({ message: 'Question not found' });
     }
